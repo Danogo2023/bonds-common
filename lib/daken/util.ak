@@ -265,11 +265,12 @@ pub fn has_valid_nft_license(
   // get nft_license in inputs or in reference_inputs
   when find_map(inputs, contain_nft_license) is {
     Some(_) -> True
-    None -> {
-      expect Some(VerificationKey(vkh)) =
-        find_map(reference_inputs, contain_nft_license)
-      // check signatory from the owner of nft_license
-      list.has(extra_signatories, vkh)?
-    }
+    None ->
+      when find_map(reference_inputs, contain_nft_license) is {
+        Some(VerificationKey(vkh)) ->
+          // check signatory from the owner of nft_license
+          list.has(extra_signatories, vkh)?
+        _ -> False
+      }
   }
 }
